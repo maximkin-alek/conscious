@@ -104,8 +104,8 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["addUseful"]),
-    ...mapGetters(["getUsefulsList"]),
+    ...mapActions({ addUseful: "usefuls/addUseful" }),
+
     addUsefulActivity() {
       this.addUseful(this.currentUseful);
       this.currentUseful = "";
@@ -113,8 +113,9 @@ export default {
     addHarmfulHabit() {},
   },
   computed: {
+    ...mapGetters({ getUsefulsList: "usefuls/getUsefulsList" }),
     usefulsList() {
-      return this.getUsefulsList();
+      return this.getUsefulsList;
     },
   },
 };
