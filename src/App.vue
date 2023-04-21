@@ -1,24 +1,21 @@
 <template>
-  <div id="app">
-    <main-page></main-page>
-  </div>
+  <v-app>
+    <main-page />
+  </v-app>
 </template>
 
 <script>
-import MainPage from "./components/MainPage.vue";
+import MainPage from "./components/MainPage";
 
 export default {
   name: "App",
+
   components: {
     "main-page": MainPage,
   },
+
+  data: () => ({
+    //
+  }),
 };
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-</style>
