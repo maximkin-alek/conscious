@@ -23,7 +23,7 @@
           <p>
             Введите несколько полезных, до которых постоянно не доходят руки :)
           </p>
-          <form class="useful-form" @submit.prevent="addUseful">
+          <form class="useful-form" @submit.prevent="addUsefulActivity">
             <div class="form-item">
               <v-text-field
                 v-model="currentUseful"
@@ -88,8 +88,9 @@
 </template>
 
 <script>
-import MainHeader from "./MainHeader.vue";
-import MainPopup from "./MainPopup.vue";
+import MainHeader from "../components/MainHeader.vue";
+import MainPopup from "../components/MainPopup.vue";
+import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     "main-header": MainHeader,
@@ -97,18 +98,24 @@ export default {
   },
   data() {
     return {
-      usefulsList: ["Почитать", "Заняться спортом", "Заняться английским"],
       currentUseful: "",
       currentHarmfulHabit: "",
       time: "00:15",
     };
   },
   methods: {
-    addUseful() {
-      this.usefulsList.push(this.currentUseful);
+    ...mapActions(["addUseful"]),
+    ...mapGetters(["getUsefulsList"]),
+    addUsefulActivity() {
+      this.addUseful(this.currentUseful);
       this.currentUseful = "";
     },
     addHarmfulHabit() {},
+  },
+  computed: {
+    usefulsList() {
+      return this.getUsefulsList();
+    },
   },
 };
 </script>
