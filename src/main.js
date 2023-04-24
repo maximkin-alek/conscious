@@ -1,8 +1,12 @@
 import Vue from "vue";
 import App from "./App.vue";
 
-import store from "./store/index";
+import VueRouter from "vue-router";
 import vuetify from "./plugins/vuetify";
+import router from "./router";
+import store from "./store/index";
+
+Vue.use(VueRouter);
 
 Vue.config.productionTip = false;
 
@@ -11,4 +15,5 @@ new Vue({
   el: "#app",
   vuetify,
   store,
+  router,
 });

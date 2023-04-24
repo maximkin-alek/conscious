@@ -1,18 +1,12 @@
 <template>
   <v-app>
-    <main-page />
+    <router-view></router-view>
   </v-app>
 </template>
 
 <script>
-import MainPage from "./pages/MainPage";
-
 export default {
   name: "App",
-
-  components: {
-    "main-page": MainPage,
-  },
 
   data: () => ({
     //

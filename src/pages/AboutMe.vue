@@ -5,7 +5,12 @@
 </template>
 
 <script>
-export default {};
+import MainHeader from "../components/MainHeader.vue";
+export default {
+  components: {
+    "main-header": MainHeader,
+  },
+};
 </script>
 
 <style lang="scss" scoped></style>
