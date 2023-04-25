@@ -21,67 +21,95 @@
 
         <section>
           <h2 class="title">Полезные дела</h2>
-          <p>
-            Введите несколько полезных, до которых постоянно не доходят руки :)
+          <p class="subtitle">
+            Добавьте несколько полезных дел, до которых постоянно не доходят
+            руки &#128578;
           </p>
-          <form class="useful-form" @submit.prevent="addUsefulActivity">
+          <v-form
+            v-model="usefulFormValid"
+            lazy-validation
+            ref="usefulForm"
+            class="useful-form"
+            @submit.prevent="addUsefulActivity"
+          >
             <div class="form-item">
               <v-text-field
                 v-model="currentUseful"
                 required
                 placeholder="Что нужно сделать"
                 class="form-input"
-                id="useful"
-                name="useful"
+                :rules="inputRules"
+                :counter="50"
               />
             </div>
-            <v-btn class="form-button" type="submit"> Добавить </v-btn>
-          </form>
-          <v-card elevation="4" shaped max-width="50%">
-            <v-card-title>Список полезных дел:</v-card-title>
-            <v-list>
-              <v-list-item-content
-                ><v-list-item :key="i" v-for="(useful, i) in usefulsList">
-                  <v-list-item-title>
-                    {{ useful }}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list-item-content>
-            </v-list>
-          </v-card>
-          <h2 class="title">Чем хотите заняться сейчас:</h2>
-          <form @submit.prevent="addHarmfulHabit">
-            <div class="form-item">
-              <v-text-field
-                required
-                v-model="currentHarmfulHabit"
-                placeholder="Что будете делать"
-                class="form-input"
-                id="harmful"
-                name="harmful"
-              />
-            </div>
-
-            <div class="time-form-item">
-              <label for="time-to-harmful"
-                >Сколько времени готовы потратить:
-              </label>
-              <v-time-picker
-                color="green lighten-1"
-                v-model="time"
-                id="time-to-harmful"
-                ampm-in-title
-                format="24hr"
-                scrollable
-              ></v-time-picker>
-            </div>
-
-            <main-popup
-              :time="time"
-              :harmful="currentHarmfulHabit"
-              :usefull="usefulsList[0]"
+            <v-btn class="form-button" type="submit">Добавить</v-btn>
+          </v-form>
+          <div class="content-block">
+            <v-card elevation="4" shaped>
+              <v-card-title>Список полезных дел:</v-card-title>
+              <v-list>
+                <v-list-item-content
+                  ><v-list-item :key="i" v-for="(useful, i) in usefulsList">
+                    <v-list-item-title class="form-text">
+                      {{ i + 1 }}. {{ useful }}
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list-item-content>
+              </v-list> </v-card
+            ><v-img
+              class="harmful-image"
+              src="https://ferret-pet.ru/wp-content/uploads/7/a/9/7a94f948d1261bd441561f5e72b50385.jpeg"
+              alt="Кот учится"
             />
-          </form>
+          </div>
+          <div class="content-block">
+            <v-img
+              class="harmful-image"
+              src="https://gamerwall.pro/uploads/posts/2022-12/1671145941_gamerwall-pro-p-progulka-v-gorakh-krasivo-67.jpg"
+              alt="Вид на горы"
+            />
+            <v-form
+              v-model="harmfulFormValid"
+              lazy-validation
+              ref="harmfulForm"
+              @submit.prevent="addHarmfulHabit"
+            >
+              <h2 class="title">Чем хотите заняться сейчас:</h2>
+              <div class="form-items">
+                <div class="form-item">
+                  <v-text-field
+                    :rules="inputRules"
+                    :counter="50"
+                    required
+                    v-model="currentHarmfulHabit"
+                    placeholder="Что будете делать"
+                    class="form-input"
+                  />
+                </div>
+
+                <div class="time-form-item">
+                  <label for="time-to-harmful"
+                    >Сколько времени собираетесь потратить:
+                  </label>
+                  <v-time-picker
+                    color="green lighten-1"
+                    v-model="time"
+                    id="time-to-harmful"
+                    ampm-in-title
+                    format="24hr"
+                    scrollable
+                  ></v-time-picker>
+                </div>
+              </div>
+
+              <main-popup
+                :time="time"
+                :harmful="currentHarmfulHabit"
+                :usefull="usefulsList[0]"
+                :formIsValid="harmfulFormValid"
+              />
+            </v-form>
+          </div>
         </section>
       </v-container>
     </v-main>
@@ -102,14 +130,22 @@ export default {
       currentUseful: "",
       currentHarmfulHabit: "",
       time: "00:15",
+      usefulFormValid: false,
+      harmfulFormValid: false,
+      inputRules: [
+        (v) => Boolean(v) || "Необходимо заполнить поле",
+        (v) => (Boolean(v) && v.length <= 50) || "Не больше 50 знаков ",
+      ],
     };
   },
   methods: {
     ...mapActions({ addUseful: "usefuls/addUseful" }),
 
     addUsefulActivity() {
-      this.addUseful(this.currentUseful);
-      this.currentUseful = "";
+      if (this.$refs.usefulForm.validate()) {
+        this.addUseful(this.currentUseful);
+        this.$refs.usefulForm.reset();
+      }
     },
     addHarmfulHabit() {},
   },
@@ -128,12 +164,12 @@ export default {
   min-height: 80vh;
   background: #f4f4f4;
 }
-
 .description {
   display: flex;
   justify-content: space-between;
 }
 .description-text {
+  font-family: "Ubuntu", sans-serif;
   font-size: 24px;
   margin-right: 40px;
   font-style: italic;
@@ -147,6 +183,15 @@ export default {
 .useful-form {
   display: flex;
   align-items: center;
+  padding: 16px;
+  justify-content: center;
+  border: 1px solid grey;
+  border-radius: 6px;
+}
+.form-text {
+  font-family: "Ubuntu", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
 }
 .form-button {
   margin-left: 15px;
@@ -157,8 +202,19 @@ export default {
   max-width: 50%;
   margin: 0 auto;
 }
-
 .title {
   margin-top: 25px;
+}
+.subtitle {
+  font-family: "Ubuntu", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  font-style: italic;
+}
+.content-block {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 4fr 6fr;
+  column-gap: 16px;
 }
 </style>

@@ -2,6 +2,7 @@
   <v-dialog v-model="dialog" max-width="400px">
     <template v-slot:activator="{ on, attrs }">
       <v-btn
+        :disabled="!harmful || !formIsValid"
         class="harmful-button"
         x-large
         type="submit"
@@ -45,6 +46,7 @@ export default {
     harmful: String,
     time: String,
     usefull: String,
+    formIsValid: Boolean,
   },
   methods: {
     StartTimer() {
