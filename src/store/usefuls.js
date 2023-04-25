@@ -21,5 +21,12 @@ export default {
       const arr = state.usefulsList.concat(payload);
       commit("SET_USEFULS_LIST", arr);
     },
+
+    deleteUseful({ commit, state }, payload) {
+      const filtered = state.usefulsList.filter((item) => {
+        return item !== payload;
+      });
+      commit("SET_USEFULS_LIST", filtered);
+    },
   },
 };

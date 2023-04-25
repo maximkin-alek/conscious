@@ -22,6 +22,7 @@
     </v-card>
 
     <div class="timer" v-if="isStarted">
+      <h2>Буду {{ harmful.toLowerCase() }} ещё:</h2>
       <flip-countdown
         :deadline="timer"
         :showDays="false"
@@ -61,7 +62,6 @@ export default {
         timeString = this.$moment(timeString).add(timeHours, "hours").format();
       }
       timeString = timeString.split("T").join();
-      console.log(timeString);
       this.timer = timeString;
       this.isStarted = true;
     },

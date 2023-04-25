@@ -49,9 +49,22 @@
               <v-card-title>Список полезных дел:</v-card-title>
               <v-list>
                 <v-list-item-content
-                  ><v-list-item :key="i" v-for="(useful, i) in usefulsList">
+                  ><v-list-item
+                    class="form-list-item"
+                    :key="i"
+                    v-for="(useful, i) in usefulsList"
+                  >
                     <v-list-item-title class="form-text">
                       {{ i + 1 }}. {{ useful }}
+                      <v-btn
+                        @click="deleteListItem(useful)"
+                        class="form-delete-button"
+                        x-small
+                        icon
+                        raised
+                      >
+                        <v-icon color="red">mdi-delete-circle</v-icon>
+                      </v-btn>
                     </v-list-item-title>
                   </v-list-item>
                 </v-list-item-content>
@@ -139,7 +152,10 @@ export default {
     };
   },
   methods: {
-    ...mapActions({ addUseful: "usefuls/addUseful" }),
+    ...mapActions({
+      addUseful: "usefuls/addUseful",
+      deleteUseful: "usefuls/deleteUseful",
+    }),
 
     addUsefulActivity() {
       if (this.$refs.usefulForm.validate()) {
@@ -148,6 +164,9 @@ export default {
       }
     },
     addHarmfulHabit() {},
+    deleteListItem(itemName) {
+      this.deleteUseful(itemName);
+    },
   },
   computed: {
     ...mapGetters({ getUsefulsList: "usefuls/getUsefulsList" }),
@@ -188,11 +207,23 @@ export default {
   border: 1px solid grey;
   border-radius: 6px;
 }
+.form-item {
+  width: 50%;
+}
 .form-text {
   font-family: "Ubuntu", sans-serif;
   font-size: 18px;
+  line-height: 32px;
   font-weight: 500;
 }
+.form-list-item {
+  min-height: 32px;
+  border-bottom: 1px solid lightgrey;
+}
+.form-delete-button {
+  margin-left: 8px;
+}
+
 .form-button {
   margin-left: 15px;
 }
