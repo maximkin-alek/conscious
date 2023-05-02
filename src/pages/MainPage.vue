@@ -118,7 +118,7 @@
               <main-popup
                 :time="time"
                 :harmful="currentHarmfulHabit"
-                :usefull="usefulsList[0]"
+                :usefull="getRandomUseful()"
                 :formIsValid="harmfulFormValid"
               />
             </v-form>
@@ -133,11 +133,14 @@
 import MainHeader from "../components/MainHeader.vue";
 import MainPopup from "../components/MainPopup.vue";
 import { mapActions, mapGetters } from "vuex";
+import randomArrayElement from "../mixins/randomArrayElement";
+
 export default {
   components: {
     "main-header": MainHeader,
     "main-popup": MainPopup,
   },
+  mixins: [randomArrayElement],
   data() {
     return {
       currentUseful: "",
@@ -166,6 +169,9 @@ export default {
     addHarmfulHabit() {},
     deleteListItem(itemName) {
       this.deleteUseful(itemName);
+    },
+    getRandomUseful() {
+      return this.getRandomArrayElement(this.usefulsList);
     },
   },
   computed: {

@@ -15,14 +15,14 @@
     <v-card v-if="!isStarted">
       <v-card-title>Мой осознанный выбор:</v-card-title>
       <v-card-text
-        >Потратить {{ time }} мин. на {{ harmful }} вместо
-        {{ usefull }}</v-card-text
+        >Потратить {{ time }} мин. на {{ harmful | lowerCase }} вместо
+        {{ usefull | lowerCase }}</v-card-text
       >
       <v-btn @click="StartTimer">Начать</v-btn>
     </v-card>
 
     <div class="timer" v-if="isStarted">
-      <h2>Буду {{ harmful.toLowerCase() }} ещё:</h2>
+      <h2>Буду {{ harmful | lowerCase }} ещё:</h2>
       <flip-countdown
         :deadline="timer"
         :showDays="false"
@@ -67,6 +67,11 @@ export default {
     },
     timeElapsedHandler() {
       alert("Время вышло!");
+    },
+  },
+  filters: {
+    lowerCase(string) {
+      return string.toLowerCase();
     },
   },
 };
