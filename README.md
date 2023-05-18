@@ -1,24 +1,39 @@
 # conscious
 
+Conscious - это веб-сервис, разработанный для помощи пользователям в осознанном принятии решений, замене вредных привычек на полезные действия. Он предоставляет простой интерфейс, где пользователи могут вводить желаемые продуктивные задачи и вредные привычки, которые они хотят преодолеть. Сервис генерирует сообщения, напоминая пользователям о их осознанном выборе уделить время полезному занятию вместо занятия вредной привычкой.
+
+## Используемые технологии
+
+Vue.js: JavaScript-фреймворк для создания пользовательских интерфейсов.
+Vue Router: Официальная библиотека маршрутизации для Vue.js.
+Vuex: Состояние управления для Vue.js.
+Vuetify: Компонентный фреймворк с материальным дизайном для Vue.js.
+Vue-Moment: Плагин для работы с датами и временем в приложении Vue.js.
+Vue2-Flip-Countdown: Компонент обратного отсчета для Vue.js.
+Core-js: Модуль полифиллов JavaScript.
+Gh-pages: Инструмент для размещения веб-страниц на GitHub Pages.
+
 ## Project setup
+
 ```
 yarn install
 ```
 
 ### Compiles and hot-reloads for development
+
 ```
 yarn serve
 ```
 
 ### Compiles and minifies for production
+
 ```
 yarn build
 ```
 
 ### Lints and fixes files
+
 ```
 yarn lint
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+```
