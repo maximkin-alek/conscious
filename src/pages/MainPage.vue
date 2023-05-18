@@ -254,4 +254,53 @@ export default {
   grid-template-columns: 4fr 6fr;
   column-gap: 16px;
 }
+@media screen and (max-width: 1024px) {
+  .body {
+    padding: 24px;
+  }
+  .description {
+    display: block;
+  }
+  .description-image {
+    width: 100%;
+  }
+  .time-form-item {
+    max-width: 80%;
+  }
+}
+@media screen and (max-width: 768px) {
+  .body {
+    padding: 16px;
+  }
+  .description-text {
+    font-size: 16px;
+  }
+  .description-image {
+    width: 100%;
+  }
+  .useful-form {
+    display: block;
+  }
+  .form-item {
+    width: 100%;
+  }
+  .form-text {
+    font-size: 14px;
+    line-height: 24px;
+  }
+  .form-button {
+    display: block;
+    margin: 0 auto;
+  }
+  .content-block {
+    display: block;
+  }
+  .content-block:last-of-type {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .time-form-item {
+    max-width: 100%;
+  }
+}
 </style>
