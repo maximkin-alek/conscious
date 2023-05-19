@@ -2,11 +2,15 @@
   "name": "conscious",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.22.0"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-		"deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "core-js": "^3.8.3",
