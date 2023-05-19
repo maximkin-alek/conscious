@@ -1,15 +1,29 @@
 <template>
-  <header class="header">
-    <h1 class="title">Выбирайте осознанно</h1>
-    <div class="header-links">
-      <router-link class="header-link" to="/">Главная</router-link>
-      <router-link class="header-link" to="/about">О проекте</router-link>
-    </div>
-  </header>
+  <div>
+    <header class="header">
+      <h1 class="title">Выбирайте осознанно</h1>
+      <div class="header-links">
+        <router-link class="header-link" to="/">Главная</router-link>
+        <router-link class="header-link" to="/about">О проекте</router-link>
+      </div>
+    </header>
+    <mobile-header
+      @onMobileMenuButtonClick="onMobileMenuButtonClick"
+      class="mobile-header"
+    />
+  </div>
 </template>
 
 <script>
-export default {};
+import MobileHeader from "../components/MobileHeader.vue";
+export default {
+  components: { "mobile-header": MobileHeader },
+  methods: {
+    onMobileMenuButtonClick() {
+      this.$emit("onMobileMenuButtonClick");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -41,5 +55,16 @@ export default {};
 
 .title {
   color: #f7c08a;
+}
+.mobile-header {
+  display: none;
+}
+@media screen and (max-width: 500px) {
+  .header {
+    display: none;
+  }
+  .mobile-header {
+    display: block;
+  }
 }
 </style>

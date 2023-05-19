@@ -1,143 +1,137 @@
 <template>
   <div>
-    <main-header />
-    <v-main>
-      <v-container class="body">
-        <h2 class="title">О сервисе:</h2>
-        <div class="description">
-          <p class="description-text">
-            Наш сервис поможет вам принимать осознанные решения и выбирать
-            полезные занятия вместо вредных привычек. Просто введите список
-            ваших любимых занятий и время, которое вы хотите уделить вредной
-            привычке, а наш сервис установит таймер и подскажет полезное занятие
-            вместо этого.
-          </p>
-          <v-img
-            class="description-image"
-            src="https://vamber.ru/wp-content/uploads/2021/03/3475771-scaled.jpg"
-            alt="йога"
+    <v-container class="body">
+      <h2 class="title">О сервисе:</h2>
+      <div class="description">
+        <p class="description-text">
+          Наш сервис поможет вам принимать осознанные решения и выбирать
+          полезные занятия вместо вредных привычек. Просто введите список ваших
+          любимых занятий и время, которое вы хотите уделить вредной привычке, а
+          наш сервис установит таймер и подскажет полезное занятие вместо этого.
+        </p>
+        <v-img
+          class="description-image"
+          src="https://vamber.ru/wp-content/uploads/2021/03/3475771-scaled.jpg"
+          alt="йога"
+        />
+      </div>
+
+      <section>
+        <h2 class="title">Полезные дела</h2>
+        <p class="subtitle">
+          Добавьте несколько полезных дел, до которых постоянно не доходят руки
+          &#128578;
+        </p>
+        <v-form
+          v-model="usefulFormValid"
+          lazy-validation
+          ref="usefulForm"
+          class="useful-form"
+          @submit.prevent="addUsefulActivity"
+        >
+          <div class="form-item">
+            <v-text-field
+              v-model="currentUseful"
+              required
+              placeholder="Что нужно сделать"
+              class="form-input"
+              :rules="inputRules"
+              :counter="50"
+            />
+          </div>
+          <v-btn class="form-button" type="submit">Добавить</v-btn>
+        </v-form>
+        <div class="content-block">
+          <v-card elevation="4" shaped>
+            <v-card-title>Список полезных дел:</v-card-title>
+            <v-list>
+              <v-list-item-content
+                ><v-list-item
+                  class="form-list-item"
+                  :key="i"
+                  v-for="(useful, i) in usefulsList"
+                >
+                  <v-list-item-title class="form-text">
+                    {{ i + 1 }}. {{ useful }}
+                    <v-btn
+                      @click="deleteListItem(useful)"
+                      class="form-delete-button"
+                      x-small
+                      icon
+                      raised
+                    >
+                      <v-icon color="red">mdi-delete-circle</v-icon>
+                    </v-btn>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list-item-content>
+            </v-list> </v-card
+          ><v-img
+            class="harmful-image"
+            src="https://ferret-pet.ru/wp-content/uploads/7/a/9/7a94f948d1261bd441561f5e72b50385.jpeg"
+            alt="Кот учится"
           />
         </div>
-
-        <section>
-          <h2 class="title">Полезные дела</h2>
-          <p class="subtitle">
-            Добавьте несколько полезных дел, до которых постоянно не доходят
-            руки &#128578;
-          </p>
+        <div class="content-block">
+          <v-img
+            class="harmful-image"
+            src="https://gamerwall.pro/uploads/posts/2022-12/1671145941_gamerwall-pro-p-progulka-v-gorakh-krasivo-67.jpg"
+            alt="Вид на горы"
+          />
           <v-form
-            v-model="usefulFormValid"
+            v-model="harmfulFormValid"
             lazy-validation
-            ref="usefulForm"
-            class="useful-form"
-            @submit.prevent="addUsefulActivity"
+            ref="harmfulForm"
+            @submit.prevent="addHarmfulHabit"
           >
-            <div class="form-item">
-              <v-text-field
-                v-model="currentUseful"
-                required
-                placeholder="Что нужно сделать"
-                class="form-input"
-                :rules="inputRules"
-                :counter="50"
-              />
-            </div>
-            <v-btn class="form-button" type="submit">Добавить</v-btn>
-          </v-form>
-          <div class="content-block">
-            <v-card elevation="4" shaped>
-              <v-card-title>Список полезных дел:</v-card-title>
-              <v-list>
-                <v-list-item-content
-                  ><v-list-item
-                    class="form-list-item"
-                    :key="i"
-                    v-for="(useful, i) in usefulsList"
-                  >
-                    <v-list-item-title class="form-text">
-                      {{ i + 1 }}. {{ useful }}
-                      <v-btn
-                        @click="deleteListItem(useful)"
-                        class="form-delete-button"
-                        x-small
-                        icon
-                        raised
-                      >
-                        <v-icon color="red">mdi-delete-circle</v-icon>
-                      </v-btn>
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list-item-content>
-              </v-list> </v-card
-            ><v-img
-              class="harmful-image"
-              src="https://ferret-pet.ru/wp-content/uploads/7/a/9/7a94f948d1261bd441561f5e72b50385.jpeg"
-              alt="Кот учится"
-            />
-          </div>
-          <div class="content-block">
-            <v-img
-              class="harmful-image"
-              src="https://gamerwall.pro/uploads/posts/2022-12/1671145941_gamerwall-pro-p-progulka-v-gorakh-krasivo-67.jpg"
-              alt="Вид на горы"
-            />
-            <v-form
-              v-model="harmfulFormValid"
-              lazy-validation
-              ref="harmfulForm"
-              @submit.prevent="addHarmfulHabit"
-            >
-              <h2 class="title">Чем хотите заняться сейчас:</h2>
-              <div class="form-items">
-                <div class="form-item">
-                  <v-text-field
-                    :rules="inputRules"
-                    :counter="50"
-                    required
-                    v-model="currentHarmfulHabit"
-                    placeholder="Что будете делать"
-                    class="form-input"
-                  />
-                </div>
-
-                <div class="time-form-item">
-                  <label for="time-to-harmful"
-                    >Сколько времени собираетесь потратить:
-                  </label>
-                  <v-time-picker
-                    color="green lighten-1"
-                    v-model="time"
-                    id="time-to-harmful"
-                    ampm-in-title
-                    format="24hr"
-                    scrollable
-                  ></v-time-picker>
-                </div>
+            <h2 class="title">Чем хотите заняться сейчас:</h2>
+            <div class="form-items">
+              <div class="form-item">
+                <v-text-field
+                  :rules="inputRules"
+                  :counter="50"
+                  required
+                  v-model="currentHarmfulHabit"
+                  placeholder="Что будете делать"
+                  class="form-input"
+                />
               </div>
 
-              <main-popup
-                :time="time"
-                :harmful="currentHarmfulHabit"
-                :usefull="getRandomUseful()"
-                :formIsValid="harmfulFormValid"
-              />
-            </v-form>
-          </div>
-        </section>
-      </v-container>
-    </v-main>
+              <div class="time-form-item">
+                <label for="time-to-harmful"
+                  >Сколько времени собираетесь потратить:
+                </label>
+                <v-time-picker
+                  color="green lighten-1"
+                  v-model="time"
+                  id="time-to-harmful"
+                  ampm-in-title
+                  format="24hr"
+                  scrollable
+                ></v-time-picker>
+              </div>
+            </div>
+
+            <main-popup
+              :time="time"
+              :harmful="currentHarmfulHabit"
+              :usefull="getRandomUseful()"
+              :formIsValid="harmfulFormValid"
+            />
+          </v-form>
+        </div>
+      </section>
+    </v-container>
   </div>
 </template>
 
 <script>
-import MainHeader from "../components/MainHeader.vue";
 import MainPopup from "../components/MainPopup.vue";
 import { mapActions, mapGetters } from "vuex";
 import randomArrayElement from "../mixins/randomArrayElement";
 
 export default {
   components: {
-    "main-header": MainHeader,
     "main-popup": MainPopup,
   },
   mixins: [randomArrayElement],
