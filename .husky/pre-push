@@ -13,12 +13,11 @@ if [ -f "AI_REVIEW.md" ]; then
   echo "📊 Краткая сводка из отчета:"
   echo "----------------------------"
   
-  # Извлекаем основные метрики из отчета
-  if command -v grep > /dev/null 2>&1; then
-    grep -E "(Проанализировано файлов:|Обнаружено проблем:|Предупреждений:|Рекомендаций:)" AI_REVIEW.md | head -4
+  # Показываем первые строки отчёта (стало универсальнее)
+  if command -v head > /dev/null 2>&1; then
+    head -n 25 AI_REVIEW.md
   else
-    # Для Windows без grep
-    echo "Для полного отчета откройте файл AI_REVIEW.md"
+    echo "Откройте файл AI_REVIEW.md для просмотра отчёта."
   fi
   
   echo ""
