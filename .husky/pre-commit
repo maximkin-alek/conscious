@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+echo "🧹 Running pre-commit hooks..."
+
+# Запускаем lint-staged для проверки и автоисправления файлов
+npx lint-staged
+
+# Если lint-staged завершился с ошибкой, прерываем коммит
+if [ $? -ne 0 ]; then
+  echo "❌ Pre-commit hooks failed. Please fix the issues above."
+  exit 1
+fi
+
+echo "✅ Pre-commit hooks passed successfully!"
