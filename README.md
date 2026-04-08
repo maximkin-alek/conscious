@@ -45,3 +45,9 @@ yarn build
 yarn lint
 
 ```
+
+## AI-ревью перед push
+
+Перед `git push` запускается хук, который генерирует `AI_REVIEW.md`.
+Чтобы включить **реальное LLM-ревью**, создайте `.env.local` по примеру `.env.example`
+и заполните `OPENAI_API_KEY`.
