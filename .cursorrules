@@ -1,0 +1,145 @@
+# Проект: осознанность и выбор дел
+# Пользователь создаёт список полезных дел и "вредное" дело,
+# на которое собирается потратить время — чтобы осознать выбор.
+# Стадия: начальная, без API, данные локально.
+
+## СТЕК
+
+- Vue 3.5
+- Vue Router 4.5
+- Vuetify 3.7 + vite-plugin-vuetify
+- Vuex 4 → миграция на Pinia (оба могут существовать одновременно)
+- dayjs 1.11 для работы с датами
+- Vite 7, Sass, ESLint + Prettier
+- Без TypeScript (если не указано явно)
+
+## КРИТИЧЕСКИЕ ПРАВИЛА — NEVER
+
+- NEVER использовать Options API в новых компонентах — только Composition API + `<script setup>`
+- NEVER трогать существующие Vuex-сторы без явной просьбы мигрировать
+- NEVER добавлять внешние зависимости без явного запроса
+- NEVER создавать inline-стили — только классы Vuetify или scoped CSS
+- NEVER использовать `$store` в новых компонентах — только Pinia
+
+## МИГРАЦИЯ VUE 2 → VUE 3
+
+- Новые компоненты — только `<script setup>` + Composition API
+- Существующие Options API компоненты не трогать если не просят
+- При миграции компонента: сначала спросить, потом переписывать
+- Новые сторы — только Pinia (`defineStore`), не Vuex
+- `v-model` в Vue 3: использует `modelValue` + `update:modelValue`, не `value` + `input`
+- Убрать `.sync` модификатор — заменить на `v-model:propName`
+- Фильтры Vue 2 (`{{ value | filter }}`) → computed или утилитные функции
+
+## СТИЛЬ КОМПОНЕНТОВ
+
+Структура нового компонента всегда в таком порядке:
+```vue
+<script setup>
+// 1. imports
+// 2. props & emits
+// 3. store (pinia)
+// 4. refs & reactive
+// 5. computed
+// 6. functions
+// 7. lifecycle hooks
+</script>
+
+<template>
+  <!-- только Vuetify-компоненты для UI -->
+</template>
+
+<style scoped lang="scss">
+/* минимум стилей — использовать утилиты Vuetify */
+</style>
+```
+
+## PINIA — ПАТТЕРН СТОРА
+
+```js
+// stores/tasks.js
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+
+export const useTasksStore = defineStore('tasks', () => {
+  // state
+  const tasks = ref([])
+
+  // getters
+  const completedTasks = computed(() => tasks.value.filter(t => t.done))
+
+  // actions
+  function addTask(task) {
+    tasks.value.push(task)
+  }
+
+  return { tasks, completedTasks, addTask }
+})
+```
+
+- Всегда использовать setup-синтаксис в defineStore (не options-синтаксис)
+- Называть стор-файлы: `use[Name]Store.js` или `[name].js` в папке `stores/`
+
+## ПРЕДМЕТНАЯ ОБЛАСТЬ ПРОЕКТА
+
+- "Полезное дело" (task) — то что пользователь должен/хочет сделать
+- "Вредное дело" (distraction) — то на что он собирается потратить время вместо
+- Ключевая механика: пользователь явно выбирает distraction вместо task — это момент осознанности
+- Данные хранятся локально (localStorage) до появления API
+- dayjs использовать для: временных меток задач, подсчёта потраченного времени
+
+## VUETIFY
+
+- Использовать компоненты Vuetify для всего UI: v-btn, v-card, v-list, v-dialog и т.д.
+- Цвета через систему Vuetify: color="primary", не хардкодить hex
+- Отступы через утилиты: class="pa-4 mb-2", не писать style="padding: 16px"
+- Иконки: mdi-* (Material Design Icons встроены в Vuetify)
+
+## РАБОТА С ДАТАМИ (dayjs)
+
+```js
+import dayjs from 'dayjs'
+
+// Создать временную метку
+const timestamp = dayjs().toISOString()
+
+// Отобразить дату
+dayjs(task.createdAt).format('D MMM, HH:mm')
+
+// Разница во времени
+dayjs().diff(dayjs(task.startedAt), 'minute')
+```
+
+## ЛОКАЛЬНОЕ ХРАНИЛИЩЕ (до API)
+
+```js
+// Паттерн для Pinia: persist через watch
+import { watch } from 'vue'
+
+watch(tasks, (val) => {
+  localStorage.setItem('tasks', JSON.stringify(val))
+}, { deep: true })
+
+// Загрузка при инициализации стора
+const saved = localStorage.getItem('tasks')
+const tasks = ref(saved ? JSON.parse(saved) : [])
+```
+
+## ИМЕНОВАНИЕ
+
+- Компоненты: PascalCase (TaskCard.vue, DistractionPicker.vue)
+- Composables: use + PascalCase (useTaskList.js)
+- Сторы: use + Name + Store (useTasksStore)
+- Переменные/функции: camelCase
+- Константы: UPPER_SNAKE_CASE
+
+## ПРОМПТ ДЛЯ МИГРАЦИИ КОМПОНЕНТА (использовать в Cursor Composer)
+
+"Migrate this Vue 2 Options API component to Vue 3 Composition API with <script setup>.
+Rules:
+- Keep the same template structure, only change script
+- Replace Vuex $store calls with Pinia useStore()
+- Replace filters with computed properties or inline functions
+- Replace .sync with v-model:propName
+- Keep existing logic identical, do not refactor business logic
+Component: [вставить код]"
