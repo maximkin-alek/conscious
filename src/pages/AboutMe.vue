@@ -53,9 +53,12 @@ export default {};
 .body {
   padding: 40px;
   min-height: 80vh;
-  background: #f4f4f4;
+  background: #f7f8fb;
 }
 .title {
   margin-bottom: 24px;
+}
+.description-image {
+  border-radius: 14px;
 }
 </style>

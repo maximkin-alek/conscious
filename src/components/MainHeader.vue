@@ -18,17 +18,25 @@
 import MobileHeader from "../components/MobileHeader.vue";
 export default {
   components: { "mobile-header": MobileHeader },
-  methods: {
-    onMobileMenuButtonClick() {
-      this.$emit("onMobileMenuButtonClick");
-    },
+  emits: ["onMobileMenuButtonClick"],
+
+  setup(props, { emit }) {
+    const onMobileMenuButtonClick = () => {
+      emit("onMobileMenuButtonClick");
+    };
+    return {
+      onMobileMenuButtonClick,
+    };
   },
 };
 </script>
 
 <style scoped>
 .header {
-  background: #6bb5ff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
   min-height: 60px;
   display: flex;
   align-items: center;
@@ -38,15 +46,15 @@ export default {
 
 .header-link {
   font-size: 16px;
-  font-style: italic;
+  font-weight: 600;
   margin-right: 12px;
-  color: #f7c08a;
+  color: rgba(255, 255, 255, 0.92);
   text-decoration: none;
   transition: color 0.15s ease-in-out;
 }
 
 .header-link:hover {
-  color: #eccfb2;
+  color: #ffffff;
 }
 
 .header-link:last-of-type {
@@ -54,7 +62,8 @@ export default {
 }
 
 .title {
-  color: #f7c08a;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.2px;
 }
 .mobile-header {
   display: none;

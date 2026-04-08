@@ -10,12 +10,10 @@
 
 <style scoped></style>
 
-<script>
-export default {
-  methods: {
-    onMobileMenuButtonClick() {
-      this.$emit("onMobileMenuButtonClick");
-    },
-  },
-};
+<script setup>
+const emit = defineEmits(["onMobileMenuButtonClick"]);
+
+function onMobileMenuButtonClick() {
+  emit("onMobileMenuButtonClick");
+}
 </script>

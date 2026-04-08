@@ -11,7 +11,7 @@
         </p>
         <v-img
           class="description-image"
-          src="https://vamber.ru/wp-content/uploads/2021/03/3475771-scaled.jpg"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Downward_Dog_Pose_%28Doga%29.jpg/1280px-Downward_Dog_Pose_%28Doga%29.jpg"
           alt="йога"
         />
       </div>
@@ -45,26 +45,26 @@
           <v-card elevation="4" shaped>
             <v-card-title>Список полезных дел:</v-card-title>
             <v-list>
-              <v-list-item-content
-                ><v-list-item
-                  class="form-list-item"
-                  :key="i"
-                  v-for="(useful, i) in usefulsList"
-                >
-                  <v-list-item-title class="form-text">
-                    {{ i + 1 }}. {{ useful }}
-                    <v-btn
-                      @click="deleteListItem(useful)"
-                      class="form-delete-button"
-                      x-small
-                      icon
-                      raised
-                    >
-                      <v-icon color="red">mdi-delete-circle</v-icon>
-                    </v-btn>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list-item-content>
+              <v-list-item
+                v-for="(useful, i) in usefulsList"
+                :key="useful"
+                class="form-list-item"
+              >
+                <v-list-item-title class="form-text">
+                  {{ i + 1 }}. {{ useful }}
+                </v-list-item-title>
+                <template #append>
+                  <v-btn
+                    @click="deleteListItem(useful)"
+                    class="form-delete-button"
+                    size="small"
+                    icon
+                    variant="text"
+                  >
+                    <v-icon color="red">mdi-delete-circle</v-icon>
+                  </v-btn>
+                </template>
+              </v-list-item>
             </v-list> </v-card
           ><v-img
             class="harmful-image"
@@ -75,7 +75,7 @@
         <div class="content-block">
           <v-img
             class="harmful-image"
-            src="https://gamerwall.pro/uploads/posts/2022-12/1671145941_gamerwall-pro-p-progulka-v-gorakh-krasivo-67.jpg"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Snowy_mountain_range.jpg/1280px-Snowy_mountain_range.jpg"
             alt="Вид на горы"
           />
           <v-form
@@ -101,14 +101,13 @@
                 <label for="time-to-harmful"
                   >Сколько времени собираетесь потратить:
                 </label>
-                <v-time-picker
-                  color="green lighten-1"
+                <v-text-field
                   v-model="time"
                   id="time-to-harmful"
-                  ampm-in-title
-                  format="24hr"
-                  scrollable
-                ></v-time-picker>
+                  type="time"
+                  step="60"
+                  density="compact"
+                />
               </div>
             </div>
 
@@ -154,8 +153,9 @@ export default {
       deleteUseful: "usefuls/deleteUseful",
     }),
 
-    addUsefulActivity() {
-      if (this.$refs.usefulForm.validate()) {
+    async addUsefulActivity() {
+      const result = await this.$refs.usefulForm.validate();
+      if (result.valid) {
         this.addUseful(this.currentUseful);
         this.$refs.usefulForm.reset();
       }
@@ -181,20 +181,22 @@ export default {
 .body {
   padding: 40px;
   min-height: 80vh;
-  background: #f4f4f4;
+  background: #f7f8fb;
 }
 .description {
   display: flex;
   justify-content: space-between;
+  gap: 24px;
 }
 .description-text {
   font-family: "Ubuntu", sans-serif;
   font-size: 24px;
-  margin-right: 40px;
+  margin-right: 0;
   font-style: italic;
 }
 .description-image {
   width: 40%;
+  border-radius: 14px;
 }
 .form-label {
   display: block;
@@ -204,7 +206,7 @@ export default {
   align-items: center;
   padding: 16px;
   justify-content: center;
-  border: 1px solid grey;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 6px;
 }
 .form-item {
@@ -247,6 +249,9 @@ export default {
   display: grid;
   grid-template-columns: 4fr 6fr;
   column-gap: 16px;
+}
+.harmful-image {
+  border-radius: 14px;
 }
 @media screen and (max-width: 1024px) {
   .body {

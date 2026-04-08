@@ -1,26 +1,18 @@
 <template>
   <div>
     <main-header @onMobileMenuButtonClick="handleMobileMenuButtonClick" />
-    <v-navigation-drawer height="400px" v-model="drawer" absolute temporary>
-      <v-list nav dense>
-        <v-list-item-group
-          v-model="group"
-          active-class="deep-purple--text text--accent-4"
-        >
-          <v-list-item @click="$router.push({ name: 'main' })">
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Главная</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item @click="$router.push({ name: 'about' })">
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>О проекте</v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
+    <v-navigation-drawer v-model="drawer" temporary>
+      <v-list nav density="compact">
+        <v-list-item
+          prepend-icon="mdi-home"
+          title="Главная"
+          @click="navigateTo('main')"
+        />
+        <v-list-item
+          prepend-icon="mdi-account"
+          title="О проекте"
+          @click="navigateTo('about')"
+        />
       </v-list>
     </v-navigation-drawer>
     <v-main>
@@ -34,7 +26,6 @@ import MainHeader from "../components/MainHeader.vue";
 export default {
   data() {
     return {
-      group: null,
       drawer: false,
     };
   },
@@ -44,6 +35,10 @@ export default {
   methods: {
     handleMobileMenuButtonClick() {
       this.drawer = true;
+    },
+    navigateTo(name) {
+      this.drawer = false;
+      this.$router.push({ name });
     },
   },
 };
