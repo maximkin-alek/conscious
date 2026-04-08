@@ -22,6 +22,41 @@ const PROJECT_ROOT = process.cwd();
 const RULES_FILE = path.join(PROJECT_ROOT, ".cursorrules");
 const REPORT_FILE = path.join(PROJECT_ROOT, "AI_REVIEW.md");
 
+function loadDotEnvFile(relPath) {
+  const absPath = path.join(PROJECT_ROOT, relPath);
+  if (!fileExists(absPath)) return;
+
+  const raw = fs.readFileSync(absPath, "utf-8");
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx === -1) continue;
+
+    const key = trimmed.slice(0, eqIdx).trim();
+    let val = trimmed.slice(eqIdx + 1).trim();
+
+    // strip surrounding quotes
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1);
+    }
+
+    // don't override existing env
+    if (key && process.env[key] === undefined) {
+      process.env[key] = val;
+    }
+  }
+}
+
+// Husky hooks don't automatically load .env.local — load it ourselves.
+// Priority: existing environment > .env.local > .env
+loadDotEnvFile(".env.local");
+loadDotEnvFile(".env");
+
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 const OPENAI_BASE_URL = (
