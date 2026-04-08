@@ -1,26 +1,22 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import AboutMe from "../pages/AboutMe";
-import MainPage from "../pages/MainPage";
+import { createRouter, createWebHashHistory } from "vue-router";
+import AboutMe from "../pages/AboutMe.vue";
+import MainPage from "../pages/MainPage.vue";
 import LayoutComponent from "../components/LayoutComponent.vue";
 
-Vue.use(VueRouter);
-
-const router = new VueRouter({
-  mode: "hash",
-
+export default createRouter({
+  history: createWebHashHistory(),
   routes: [
     {
       path: "/",
       component: LayoutComponent,
       children: [
         {
-          path: "/",
+          path: "",
           name: "main",
           component: MainPage,
         },
         {
-          path: "/about",
+          path: "about",
           name: "about",
           component: AboutMe,
         },
@@ -28,5 +24,3 @@ const router = new VueRouter({
     },
   ],
 });
-
-export default router;

@@ -1,21 +1,10 @@
-import Vue from "vue";
+import { createApp } from "vue";
+import { createPinia } from "pinia";
 import App from "./App.vue";
-
-import VueRouter from "vue-router";
-import vuetify from "./plugins/vuetify";
 import router from "./router";
-import store from "./store/index";
+import store from "./store";
+import vuetify from "./plugins/vuetify";
 
-Vue.use(require("vue-moment"));
+const pinia = createPinia();
 
-Vue.use(VueRouter);
-
-Vue.config.productionTip = false;
-
-new Vue({
-  render: (h) => h(App),
-  el: "#app",
-  vuetify,
-  store,
-  router,
-});
+createApp(App).use(router).use(store).use(pinia).use(vuetify).mount("#app");

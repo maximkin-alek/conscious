@@ -1,0 +1,7 @@
+dist
+node_modules
+.yarn
+.next/*
+storybook-static/*
+types/Api.ts
+
