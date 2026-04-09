@@ -21,27 +21,23 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import MainHeader from "../components/MainHeader.vue";
-export default {
-  data() {
-    return {
-      drawer: false,
-    };
-  },
-  components: {
-    "main-header": MainHeader,
-  },
-  methods: {
-    handleMobileMenuButtonClick() {
-      this.drawer = true;
-    },
-    navigateTo(name) {
-      this.drawer = false;
-      this.$router.push({ name });
-    },
-  },
-};
+
+const router = useRouter();
+
+const drawer = ref(false);
+
+function handleMobileMenuButtonClick() {
+  drawer.value = true;
+}
+
+function navigateTo(name) {
+  drawer.value = false;
+  router.push({ name });
+}
 </script>
 
 <style lang="scss" scoped></style>

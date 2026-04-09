@@ -14,21 +14,14 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import MobileHeader from "../components/MobileHeader.vue";
-export default {
-  components: { "mobile-header": MobileHeader },
-  emits: ["onMobileMenuButtonClick"],
 
-  setup(props, { emit }) {
-    const onMobileMenuButtonClick = () => {
-      emit("onMobileMenuButtonClick");
-    };
-    return {
-      onMobileMenuButtonClick,
-    };
-  },
-};
+const emit = defineEmits(["onMobileMenuButtonClick"]);
+
+function onMobileMenuButtonClick() {
+  emit("onMobileMenuButtonClick");
+}
 </script>
 
 <style scoped>

@@ -4,12 +4,6 @@
   </v-app>
 </template>
 
-<script>
-export default {
-  name: "App",
-
-  data: () => ({
-    //
-  }),
-};
+<script setup>
+defineOptions({ name: "App" });
 </script>

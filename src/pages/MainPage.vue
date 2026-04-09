@@ -124,57 +124,60 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
 import MainPopup from "../components/MainPopup.vue";
-import { mapActions, mapGetters } from "vuex";
-import randomArrayElement from "../mixins/randomArrayElement";
 
-export default {
-  components: {
-    "main-popup": MainPopup,
-  },
-  mixins: [randomArrayElement],
-  data() {
-    return {
-      currentUseful: "",
-      currentHarmfulHabit: "",
-      time: "00:15",
-      usefulFormValid: false,
-      harmfulFormValid: false,
-      inputRules: [
-        (v) => Boolean(v) || "Необходимо заполнить поле",
-        (v) => (Boolean(v) && v.length <= 50) || "Не больше 50 знаков ",
-      ],
-    };
-  },
-  methods: {
-    ...mapActions({
-      addUseful: "usefuls/addUseful",
-      deleteUseful: "usefuls/deleteUseful",
-    }),
+const store = useStore();
 
-    async addUsefulActivity() {
-      const result = await this.$refs.usefulForm.validate();
-      if (result.valid) {
-        this.addUseful(this.currentUseful);
-        this.$refs.usefulForm.reset();
-      }
-    },
-    addHarmfulHabit() {},
-    deleteListItem(itemName) {
-      this.deleteUseful(itemName);
-    },
-    getRandomUseful() {
-      return this.getRandomArrayElement(this.usefulsList);
-    },
-  },
-  computed: {
-    ...mapGetters({ getUsefulsList: "usefuls/getUsefulsList" }),
-    usefulsList() {
-      return this.getUsefulsList;
-    },
-  },
-};
+const usefulForm = ref(null);
+const harmfulForm = ref(null);
+
+const currentUseful = ref("");
+const currentHarmfulHabit = ref("");
+const time = ref("00:15");
+
+const usefulFormValid = ref(false);
+const harmfulFormValid = ref(false);
+
+const inputRules = [
+  (v) => Boolean(v) || "Необходимо заполнить поле",
+  (v) => (Boolean(v) && v.length <= 50) || "Не больше 50 знаков ",
+];
+
+const usefulsList = computed(() => store.getters["usefuls/getUsefulsList"]);
+
+function addUseful(payload) {
+  return store.dispatch("usefuls/addUseful", payload);
+}
+
+function deleteUseful(payload) {
+  return store.dispatch("usefuls/deleteUseful", payload);
+}
+
+function getRandomArrayElement(arr) {
+  const rand = Math.floor(Math.random() * arr.length);
+  return arr[rand];
+}
+
+async function addUsefulActivity() {
+  const result = await usefulForm.value?.validate?.();
+  if (result?.valid) {
+    await addUseful(currentUseful.value);
+    usefulForm.value?.reset?.();
+  }
+}
+
+function addHarmfulHabit() {}
+
+function deleteListItem(itemName) {
+  deleteUseful(itemName);
+}
+
+function getRandomUseful() {
+  return getRandomArrayElement(usefulsList.value);
+}
 </script>
 
 <style scoped>

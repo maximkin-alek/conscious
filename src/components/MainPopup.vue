@@ -33,136 +33,110 @@
   </v-dialog>
 </template>
 
-<script>
+<script setup>
+import { computed, ref } from "vue";
 import dayjs from "dayjs";
-import CountdownTimer from "./CountdownTimer.vue";
 import { storeToRefs } from "pinia";
+import CountdownTimer from "./CountdownTimer.vue";
 import { useTimerStore } from "../stores/useTimerStore";
 import alertSoundUrl from "../assets/alert.mp3";
 
-export default {
-  data() {
-    return {
-      modal: false,
-      beepAudio: null,
-    };
-  },
-  components: { CountdownTimer },
-  setup() {
-    const timerStore = useTimerStore();
-    const { isTimerStarted, deadlineMs } = storeToRefs(timerStore);
-    const { startTimer, stopTimer } = timerStore;
+const props = defineProps({
+  harmful: String,
+  time: String,
+  usefull: String,
+  formIsValid: Boolean,
+});
 
-    return {
-      isTimerStarted,
-      deadlineMs,
-      startTimer,
-      stopTimer,
-    };
-  },
-  props: {
-    harmful: String,
-    time: String,
-    usefull: String,
-    formIsValid: Boolean,
-  },
-  computed: {
-    harmfulLower() {
-      return (this.harmful || "").toLowerCase();
-    },
+const modal = ref(false);
+const beepAudio = ref(null);
 
-    usefullLower() {
-      return (this.usefull || "").toLowerCase();
-    },
-  },
-  methods: {
-    ensureBeepReady() {
-      if (this.beepAudio) return;
+const timerStore = useTimerStore();
+const { isTimerStarted, deadlineMs } = storeToRefs(timerStore);
+const { startTimer, stopTimer } = timerStore;
 
-      try {
-        const audio = new Audio(alertSoundUrl);
-        audio.volume = 0.8;
-        this.beepAudio = audio;
+const harmfulLower = computed(() => (props.harmful || "").toLowerCase());
+const usefullLower = computed(() => (props.usefull || "").toLowerCase());
 
-        // Добавляем обработчик ошибок загрузки
-        audio.addEventListener("error", (error) => {
-          console.error("Ошибка загрузки аудио:", error);
-          this.beepAudio = null;
-        });
-      } catch (error) {
-        console.error("Ошибка создания аудио объекта:", error);
-        this.beepAudio = null;
-      }
-    },
+function ensureBeepReady() {
+  if (beepAudio.value) return;
 
-    runTimer() {
-      // Готовим аудио в момент user gesture
-      this.ensureBeepReady();
+  try {
+    const audio = new Audio(alertSoundUrl);
+    audio.volume = 0.8;
+    beepAudio.value = audio;
 
-      try {
-        // Проверяем формат времени HH:mm
-        const timeRegex = /^(\d{1,2}):(\d{2})$/;
-        const match = this.time.match(timeRegex);
+    audio.addEventListener("error", (error) => {
+      console.error("Ошибка загрузки аудио:", error);
+      beepAudio.value = null;
+    });
+  } catch (error) {
+    console.error("Ошибка создания аудио объекта:", error);
+    beepAudio.value = null;
+  }
+}
 
-        if (!match) {
-          console.error("Неверный формат времени. Используйте HH:mm");
-          return;
-        }
+function runTimer() {
+  ensureBeepReady();
 
-        const timeHours = parseInt(match[1], 10);
-        const timeMinutes = parseInt(match[2], 10);
+  try {
+    const timeRegex = /^(\d{1,2}):(\d{2})$/;
+    const match = (props.time || "").match(timeRegex);
 
-        // Проверяем валидность значений
-        if (
-          isNaN(timeHours) ||
-          isNaN(timeMinutes) ||
-          timeHours < 0 ||
-          timeMinutes < 0 ||
-          timeMinutes >= 60
-        ) {
-          console.error("Неверные значения времени. Часы: 0-23, минуты: 0-59");
-          return;
-        }
+    if (!match) {
+      console.error("Неверный формат времени. Используйте HH:mm");
+      return;
+    }
 
-        const deadlineMs = dayjs()
-          .add(timeMinutes, "minute")
-          .add(timeHours, "hour")
-          .valueOf();
+    const timeHours = parseInt(match[1], 10);
+    const timeMinutes = parseInt(match[2], 10);
 
-        this.startTimer(deadlineMs);
-      } catch (error) {
-        console.error("Ошибка при запуске таймера:", error);
-      }
-    },
+    if (
+      isNaN(timeHours) ||
+      isNaN(timeMinutes) ||
+      timeHours < 0 ||
+      timeMinutes < 0 ||
+      timeMinutes >= 60
+    ) {
+      console.error("Неверные значения времени. Часы: 0-23, минуты: 0-59");
+      return;
+    }
 
-    resetTimer() {
-      this.stopTimer();
-    },
+    const nextDeadlineMs = dayjs()
+      .add(timeMinutes, "minute")
+      .add(timeHours, "hour")
+      .valueOf();
 
-    clearTimer() {
-      this.stopTimer();
-      this.modal = false;
-    },
+    startTimer(nextDeadlineMs);
+  } catch (error) {
+    console.error("Ошибка при запуске таймера:", error);
+  }
+}
 
-    timeElapsedHandler() {
-      this.ensureBeepReady();
-      if (!this.beepAudio) {
-        console.warn("Аудио не загружено");
-        return;
-      }
+function resetTimer() {
+  stopTimer();
+}
 
-      // Повторный play иногда требует сброса currentTime
-      this.beepAudio.currentTime = 0;
-      this.beepAudio.play().catch((error) => {
-        console.warn("Не удалось воспроизвести звук:", error.message);
-        // Показываем уведомление пользователю
-        if (typeof window !== "undefined" && window.alert) {
-          window.alert("Таймер завершен!");
-        }
-      });
-    },
-  },
-};
+function clearTimer() {
+  stopTimer();
+  modal.value = false;
+}
+
+function timeElapsedHandler() {
+  ensureBeepReady();
+  if (!beepAudio.value) {
+    console.warn("Аудио не загружено");
+    return;
+  }
+
+  beepAudio.value.currentTime = 0;
+  beepAudio.value.play().catch((error) => {
+    console.warn("Не удалось воспроизвести звук:", error.message);
+    if (typeof window !== "undefined" && window.alert) {
+      window.alert("Таймер завершен!");
+    }
+  });
+}
 </script>
 <style scoped>
 .modal {

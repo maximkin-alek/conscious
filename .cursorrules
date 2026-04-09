@@ -138,7 +138,7 @@ const tasks = ref(saved ? JSON.parse(saved) : [])
 "Migrate this Vue 2 Options API component to Vue 3 Composition API with <script setup>.
 Rules:
 - Keep the same template structure, only change script
-- Replace Vuex $store calls with Pinia useStore()
+- If the component uses Vuex, keep Vuex as-is (do not migrate stores) and access it via useStore() from vuex
 - Replace filters with computed properties or inline functions
 - Replace .sync with v-model:propName
 - Keep existing logic identical, do not refactor business logic

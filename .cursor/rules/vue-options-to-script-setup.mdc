@@ -1,0 +1,55 @@
+---
+description: Миграция Vue компонентов с Options API на Composition API (<script setup>)
+globs: "**/*.vue"
+alwaysApply: false
+---
+
+# Vue: Options API → `<script setup>` (Composition API)
+
+## Цель
+
+- Переводить `.vue` компоненты, где есть `export default { ... }`, на `<script setup>`, сохраняя поведение.
+- **Не менять бизнес-логику и разметку** без необходимости.
+- Не добавлять зависимости.
+
+## Процесс (делать по одному компоненту за раз)
+
+1. Определи, что в компоненте используется:
+   - `props`, `emits`
+   - `data`, `computed`, `watch`
+   - `methods`
+   - lifecycle-хуки (`mounted`, `beforeUnmount` и т.п.)
+   - `mixins`
+   - `refs` в шаблоне (`ref="..."` / `this.$refs`)
+   - Vuex (`mapActions`, `mapGetters`, `this.$store`)
+2. Перепиши только `<script>`:
+   - Замени на `<script setup>`
+   - `data()` → `ref(...)` / `reactive(...)`
+   - `computed` → `computed(...)`
+   - `methods` → обычные функции
+   - lifecycle → `onMounted`, `onBeforeUnmount`, ...
+   - `this.$refs` → `const x = ref(null)` + `ref="x"` и вызовы `x.value`
+3. Смешанные кейсы:
+   - **Vuex**: если компонент использует `mapActions/mapGetters`, оставь Vuex как есть (не мигрируй стор), но перепиши доступ:
+     - `mapGetters` → `computed(() => store.getters['module/getter'])`
+     - `mapActions` → функции-обёртки `() => store.dispatch('module/action', payload)`
+     - `this.$store` → `const store = useStore()` из `vuex`
+   - **mixins**: по возможности инлайнь только то, что реально используется, в функции/утилиты внутри `<script setup>`. Если миксин большой/непонятный — оставь миксин, но через `defineOptions({ mixins: [...] })` (Vue 3) или выдели логику в composable (если это уже есть в проекте).
+4. Проверь совместимость шаблона:
+   - `this.` в шаблоне не используется — но убедись, что все поля/функции, на которые ссылается template, объявлены в `<script setup>`.
+5. После миграции компонента:
+   - `yarn lint` (или минимум eslint на файл)
+   - `yarn test` если есть покрытие по этому месту
+
+## Быстрые подсказки по переписыванию
+
+- `components: { X }` → в `<script setup>` просто `import X from ...` (регистрация не нужна)
+- `name: 'CompName'` → `defineOptions({ name: 'CompName' })` (если имя важно для devtools)
+- `computed: { a() { ... } }` → `const a = computed(() => { ... })`
+- `methods: { foo() {} }` → `function foo() { }`
+
+## Запрещено
+
+- Не менять Vuex-сторы и их структуру без явной просьбы.
+- Не делать «рефакторинг ради стиля».
+
