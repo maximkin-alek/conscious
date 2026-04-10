@@ -4,10 +4,9 @@
       <h2 class="title">О сервисе:</h2>
       <div class="description">
         <p class="description-text">
-          Наш сервис поможет вам принимать осознанные решения и выбирать
-          полезные занятия вместо вредных привычек. Просто введите список ваших
-          любимых занятий и время, которое вы хотите уделить вредной привычке, а
-          наш сервис установит таймер и подскажет полезное занятие вместо этого.
+          Наш сервис поможет вам принимать осознанные решения и мягко выбирать,
+          чем заняться сейчас. Добавьте список дел, а затем при желании
+          используйте таймер как инструмент фокуса — без упрёков и давления.
         </p>
         <v-img
           class="description-image"
@@ -17,10 +16,10 @@
       </div>
 
       <section>
-        <h2 class="title">Полезные дела</h2>
+        <h2 class="title">Список дел</h2>
         <p class="subtitle">
-          Добавьте несколько полезных дел, до которых постоянно не доходят руки
-          &#128578;
+          Добавьте пару дел, чтобы сервис мог мягко напоминать о вариантах
+          выбора.
         </p>
         <v-form
           v-model="usefulFormValid"
@@ -43,19 +42,19 @@
         </v-form>
         <div class="content-block">
           <v-card elevation="4" shaped>
-            <v-card-title>Список полезных дел:</v-card-title>
+            <v-card-title>Список дел:</v-card-title>
             <v-list>
               <v-list-item
-                v-for="(useful, i) in usefulsList"
-                :key="useful"
+                v-for="(task, i) in tasksList"
+                :key="task"
                 class="form-list-item"
               >
                 <v-list-item-title class="form-text">
-                  {{ i + 1 }}. {{ useful }}
+                  {{ i + 1 }}. {{ task }}
                 </v-list-item-title>
                 <template #append>
                   <v-btn
-                    @click="deleteListItem(useful)"
+                    @click="deleteListItem(task)"
                     class="form-delete-button"
                     size="small"
                     icon
@@ -114,10 +113,63 @@
             <main-popup
               :time="time"
               :harmful="currentHarmfulHabit"
-              :usefull="getRandomUseful()"
+              :usefull="getRandomTask()"
               :formIsValid="harmfulFormValid"
             />
           </v-form>
+        </div>
+
+        <div class="content-block">
+          <v-card elevation="4" class="chat-card">
+            <v-card-title>AI-чат</v-card-title>
+            <v-card-text class="chat-scroll">
+              <div v-if="messages.length === 0" class="empty">
+                Напиши первое сообщение, например: «Привет, расскажи что ты
+                умеешь».
+              </div>
+
+              <div
+                v-for="(m, idx) in visibleMessages"
+                :key="idx"
+                class="msg"
+                :class="m.role"
+              >
+                <div class="meta">
+                  <strong>{{ m.role === "user" ? "Вы" : "AI" }}</strong>
+                </div>
+                <div class="content">{{ m.content }}</div>
+              </div>
+
+              <div v-if="isLoading && !hasFirstChunk" class="typing">
+                <v-progress-circular indeterminate size="18" width="2" />
+                <span>AI думает…</span>
+              </div>
+            </v-card-text>
+
+            <v-divider />
+
+            <v-card-actions>
+              <form class="chat-form" @submit.prevent="handleSubmit">
+                <v-text-field
+                  v-model="input"
+                  placeholder="Ваше сообщение…"
+                  :disabled="isLoading"
+                  hide-details
+                  density="comfortable"
+                  @keydown.enter.prevent="handleSubmit"
+                />
+                <v-btn
+                  type="submit"
+                  color="primary"
+                  :loading="isLoading"
+                  :disabled="!canSubmit"
+                  @click="handleSubmit"
+                >
+                  Отправить
+                </v-btn>
+              </form>
+            </v-card-actions>
+          </v-card>
         </div>
       </section>
     </v-container>
@@ -128,6 +180,7 @@
 import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import MainPopup from "../components/MainPopup.vue";
+import { useChat } from "../composables/useChat";
 
 const store = useStore();
 
@@ -146,18 +199,27 @@ const inputRules = [
   (v) => (Boolean(v) && v.length <= 50) || "Не больше 50 знаков ",
 ];
 
-const usefulsList = computed(() => store.getters["usefuls/getUsefulsList"]);
+const tasksList = computed(() => store.getters["tasks/getTasksList"]);
 
 onMounted(() => {
-  store.dispatch("usefuls/loadUsefuls");
+  store.dispatch("tasks/loadTasks");
 });
 
+const { messages, input, isLoading, hasFirstChunk, canSubmit, handleSubmit } =
+  useChat({
+    api: "/api/chat",
+  });
+
+const visibleMessages = computed(() =>
+  messages.value.filter((m) => m?.role !== "system"),
+);
+
 function addUseful(payload) {
-  return store.dispatch("usefuls/addUseful", payload);
+  return store.dispatch("tasks/addTask", payload);
 }
 
 function deleteUseful(payload) {
-  return store.dispatch("usefuls/deleteUseful", payload);
+  return store.dispatch("tasks/deleteTask", payload);
 }
 
 function getRandomArrayElement(arr) {
@@ -179,8 +241,8 @@ function deleteListItem(itemName) {
   deleteUseful(itemName);
 }
 
-function getRandomUseful() {
-  return getRandomArrayElement(usefulsList.value);
+function getRandomTask() {
+  return getRandomArrayElement(tasksList.value);
 }
 </script>
 
@@ -256,6 +318,51 @@ function getRandomUseful() {
   display: grid;
   grid-template-columns: 4fr 6fr;
   column-gap: 16px;
+}
+.chat-card {
+  border-radius: 12px;
+}
+.chat-scroll {
+  max-height: 55vh;
+  overflow: auto;
+}
+.chat-form {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  align-items: center;
+}
+.empty {
+  opacity: 0.75;
+}
+.msg {
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: white;
+}
+.msg.user {
+  background: #eef2ff;
+}
+.msg.assistant {
+  background: #ffffff;
+}
+.meta {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+.content {
+  white-space: pre-wrap;
+}
+.typing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+  opacity: 0.75;
+  font-size: 14px;
 }
 .harmful-image {
   border-radius: 14px;

@@ -1,8 +1,8 @@
 import { createStore } from "vuex";
-import usefuls from "./usefuls";
+import tasks from "./tasks";
 
 const store = createStore({
-  modules: { usefuls },
+  modules: { tasks },
 });
 
 export default store;

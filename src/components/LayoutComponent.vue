@@ -11,7 +11,7 @@
         <v-list-item
           prepend-icon="mdi-robot"
           title="AI-чат"
-          @click="navigateTo('chat')"
+          @click="navigateTo('main')"
         />
         <v-list-item
           prepend-icon="mdi-account"
