@@ -4,6 +4,7 @@
       <h1 class="title">Выбирайте осознанно</h1>
       <div class="header-links">
         <router-link class="header-link" to="/">Главная</router-link>
+        <router-link class="header-link" to="/chat">AI-чат</router-link>
         <router-link class="header-link" to="/about">О проекте</router-link>
       </div>
     </header>

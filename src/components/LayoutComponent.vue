@@ -9,6 +9,11 @@
           @click="navigateTo('main')"
         />
         <v-list-item
+          prepend-icon="mdi-robot"
+          title="AI-чат"
+          @click="navigateTo('chat')"
+        />
+        <v-list-item
           prepend-icon="mdi-account"
           title="О проекте"
           @click="navigateTo('about')"

@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import AboutMe from "../pages/AboutMe.vue";
 import MainPage from "../pages/MainPage.vue";
+import ChatPage from "../pages/ChatPage.vue";
 import LayoutComponent from "../components/LayoutComponent.vue";
 
 export default createRouter({
@@ -19,6 +20,11 @@ export default createRouter({
           path: "about",
           name: "about",
           component: AboutMe,
+        },
+        {
+          path: "chat",
+          name: "chat",
+          component: ChatPage,
         },
       ],
     },

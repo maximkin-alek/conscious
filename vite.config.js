@@ -11,6 +11,14 @@ export default defineConfig({
       autoImport: true,
     }),
   ],
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3005",
+        changeOrigin: true,
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
