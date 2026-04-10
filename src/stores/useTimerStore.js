@@ -18,6 +18,41 @@ export const useTimerStore = defineStore("timer", () => {
     isTimerStarted.value = false;
   }
 
+  async function loadTimer() {
+    const res = await fetch("/api/timer", { method: "GET" });
+    if (!res.ok) return;
+    const json = await res.json().catch(() => null);
+    const data = json?.data;
+    if (!data || typeof data !== "object") return;
+
+    const started = Boolean(data.isStarted);
+    const dl = typeof data.deadlineMs === "number" ? data.deadlineMs : null;
+    if (started && dl) {
+      startTimer(dl);
+    } else {
+      stopTimer();
+    }
+  }
+
+  async function startTimerRemote(minutes) {
+    const res = await fetch("/api/timer/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ minutes }),
+    });
+    const json = await res.json().catch(() => null);
+    const data = json?.data;
+    if (!res.ok || !data) return;
+    if (typeof data.deadlineMs === "number") {
+      startTimer(data.deadlineMs);
+    }
+  }
+
+  async function stopTimerRemote() {
+    const res = await fetch("/api/timer/stop", { method: "POST" });
+    if (res.ok) stopTimer();
+  }
+
   return {
     isTimerStarted,
     deadlineMs,
@@ -25,5 +60,8 @@ export const useTimerStore = defineStore("timer", () => {
     getDeadlineMs,
     startTimer,
     stopTimer,
+    loadTimer,
+    startTimerRemote,
+    stopTimerRemote,
   };
 });

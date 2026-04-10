@@ -34,8 +34,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import dayjs from "dayjs";
+import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import CountdownTimer from "./CountdownTimer.vue";
 import { useTimerStore } from "../stores/useTimerStore";
@@ -53,10 +52,14 @@ const beepAudio = ref(null);
 
 const timerStore = useTimerStore();
 const { isTimerStarted, deadlineMs } = storeToRefs(timerStore);
-const { startTimer, stopTimer } = timerStore;
+const { startTimerRemote, stopTimerRemote, loadTimer } = timerStore;
 
 const harmfulLower = computed(() => (props.harmful || "").toLowerCase());
 const usefullLower = computed(() => (props.usefull || "").toLowerCase());
+
+onMounted(() => {
+  loadTimer();
+});
 
 function ensureBeepReady() {
   if (beepAudio.value) return;
@@ -102,23 +105,24 @@ function runTimer() {
       return;
     }
 
-    const nextDeadlineMs = dayjs()
-      .add(timeMinutes, "minute")
-      .add(timeHours, "hour")
-      .valueOf();
+    const totalMinutes = timeMinutes + timeHours * 60;
+    if (totalMinutes <= 0) {
+      console.error("Длительность должна быть больше 0 минут");
+      return;
+    }
 
-    startTimer(nextDeadlineMs);
+    void startTimerRemote(totalMinutes);
   } catch (error) {
     console.error("Ошибка при запуске таймера:", error);
   }
 }
 
 function resetTimer() {
-  stopTimer();
+  void stopTimerRemote();
 }
 
 function clearTimer() {
-  stopTimer();
+  void stopTimerRemote();
   modal.value = false;
 }
 

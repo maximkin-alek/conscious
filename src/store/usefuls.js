@@ -1,7 +1,7 @@
 export default {
   namespaced: true,
   state: {
-    usefulsList: ["Почитать", "Заняться спортом", "Заняться английским"],
+    usefulsList: [],
   },
   getters: {
     getUsefulsList(state) {
@@ -14,19 +14,39 @@ export default {
     },
   },
   actions: {
-    addUseful({ commit, state }, payload) {
-      if (state.usefulsList.includes(payload)) {
-        return;
+    async loadUsefuls({ commit }) {
+      const res = await fetch("/api/usefuls", { method: "GET" });
+      if (!res.ok) return;
+      const json = await res.json().catch(() => null);
+      if (json?.data && Array.isArray(json.data)) {
+        commit("SET_USEFULS_LIST", json.data);
       }
-      const arr = state.usefulsList.concat(payload);
-      commit("SET_USEFULS_LIST", arr);
     },
 
-    deleteUseful({ commit, state }, payload) {
-      const filtered = state.usefulsList.filter((item) => {
-        return item !== payload;
+    async addUseful({ commit }, payload) {
+      const name = typeof payload === "string" ? payload : "";
+      const res = await fetch("/api/usefuls", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
       });
-      commit("SET_USEFULS_LIST", filtered);
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.data && Array.isArray(json.data)) {
+        commit("SET_USEFULS_LIST", json.data);
+      }
+    },
+
+    async deleteUseful({ commit }, payload) {
+      const name = typeof payload === "string" ? payload : "";
+      const res = await fetch("/api/usefuls", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.data && Array.isArray(json.data)) {
+        commit("SET_USEFULS_LIST", json.data);
+      }
     },
   },
 };

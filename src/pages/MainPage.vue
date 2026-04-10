@@ -125,7 +125,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import MainPopup from "../components/MainPopup.vue";
 
@@ -147,6 +147,10 @@ const inputRules = [
 ];
 
 const usefulsList = computed(() => store.getters["usefuls/getUsefulsList"]);
+
+onMounted(() => {
+  store.dispatch("usefuls/loadUsefuls");
+});
 
 function addUseful(payload) {
   return store.dispatch("usefuls/addUseful", payload);

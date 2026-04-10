@@ -4,6 +4,8 @@ const asText = (value) => (typeof value === "string" ? value : "");
 
 export function useChat(options = {}) {
   const api = asText(options.api) || "http://localhost:3001/api/chat";
+  const onFinish =
+    typeof options.onFinish === "function" ? options.onFinish : null;
 
   const input = ref("");
   const isLoading = ref(false);
@@ -71,6 +73,11 @@ export function useChat(options = {}) {
       messages.value = messages.value.slice(0, -1);
     } finally {
       isLoading.value = false;
+      try {
+        await onFinish?.();
+      } catch {
+        // ignore
+      }
     }
   }
 
