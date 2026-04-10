@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import CountdownTimer from "./CountdownTimer.vue";
 import { useTimerStore } from "../stores/useTimerStore";
@@ -60,6 +60,15 @@ const usefullLower = computed(() => (props.usefull || "").toLowerCase());
 onMounted(() => {
   loadTimer();
 });
+
+watch(
+  () => isTimerStarted.value,
+  (started) => {
+    if (started) {
+      modal.value = true;
+    }
+  },
+);
 
 function ensureBeepReady() {
   if (beepAudio.value) return;

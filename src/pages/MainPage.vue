@@ -180,6 +180,7 @@ import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import MainPopup from "../components/MainPopup.vue";
 import { useChat } from "../composables/useChat";
+import { useTimerStore } from "../stores/useTimerStore";
 
 const store = useStore();
 
@@ -204,9 +205,12 @@ onMounted(() => {
   store.dispatch("tasks/loadTasks");
 });
 
+const timerStore = useTimerStore();
+
 const { messages, input, isLoading, hasFirstChunk, canSubmit, handleSubmit } =
   useChat({
     api: "/api/chat",
+    onFinish: timerStore.loadTimer,
   });
 
 const visibleMessages = computed(() =>
