@@ -22,7 +22,8 @@
     </v-card>
 
     <div class="timer" v-if="isTimerStarted">
-      <h2>Буду {{ harmfulLower }} ещё:</h2>
+      <h2 v-if="displayedIntentLower">Буду {{ displayedIntentLower }} ещё:</h2>
+      <h2 v-else>Таймер:</h2>
       <countdown-timer
         v-if="deadlineMs"
         :deadlineMs="deadlineMs"
@@ -49,6 +50,7 @@ const props = defineProps({
 
 const modal = ref(false);
 const beepAudio = ref(null);
+const sessionIntent = ref("");
 
 const timerStore = useTimerStore();
 const { isTimerStarted, deadlineMs } = storeToRefs(timerStore);
@@ -56,9 +58,16 @@ const { startTimerRemote, stopTimerRemote, loadTimer } = timerStore;
 
 const harmfulLower = computed(() => (props.harmful || "").toLowerCase());
 const usefullLower = computed(() => (props.usefull || "").toLowerCase());
+const sessionIntentLower = computed(() =>
+  (sessionIntent.value || "").toLowerCase(),
+);
+const displayedIntentLower = computed(
+  () => harmfulLower.value || sessionIntentLower.value,
+);
 
 onMounted(() => {
   loadTimer();
+  void loadSession();
 });
 
 watch(
@@ -66,9 +75,20 @@ watch(
   (started) => {
     if (started) {
       modal.value = true;
+      void loadSession();
     }
   },
 );
+
+async function loadSession() {
+  const res = await fetch("/api/session", { method: "GET" });
+  if (!res.ok) return;
+  const json = await res.json().catch(() => null);
+  const data = json?.data;
+  const intent =
+    typeof data?.harmfulIntent === "string" ? data.harmfulIntent : "";
+  sessionIntent.value = intent;
+}
 
 function ensureBeepReady() {
   if (beepAudio.value) return;
