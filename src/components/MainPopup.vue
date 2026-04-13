@@ -1,5 +1,5 @@
 <template>
-  <v-dialog class="modal" v-model="modal" max-width="600px">
+  <v-dialog class="modal" v-model="modal" max-width="560px">
     <template #activator="{ props }">
       <v-btn
         :disabled="!harmful || !formIsValid"
@@ -8,29 +8,53 @@
         type="button"
         v-bind="props"
         @click="resetTimer"
-        >Начать</v-btn
       >
+        <span class="btn-icon">▶</span>
+        Начать
+      </v-btn>
     </template>
 
     <v-card v-if="!isTimerStarted" class="modal-card">
-      <v-card-title>Мой осознанный выбор:</v-card-title>
+      <div class="modal-header">
+        <span class="modal-icon">🌿</span>
+        <v-card-title class="modal-title">Мой осознанный выбор</v-card-title>
+      </div>
       <v-card-text class="modal-card-text">
-        Потратить {{ time }} мин. на {{ harmfulLower }} вместо
-        {{ usefullLower }}
+        <p class="choice-text">
+          Потратить <strong>{{ time }}</strong> мин. на
+        </p>
+        <p class="activity harmful-activity">{{ harmfulLower }}</p>
+        <p class="instead">вместо</p>
+        <p class="activity useful-activity">{{ usefullLower }}</p>
       </v-card-text>
-      <v-btn class="startButton" @click="runTimer">Начать</v-btn>
+      <div class="modal-actions">
+        <v-btn class="startButton" @click="runTimer">
+          <span class="btn-icon">▶</span>
+          Начать
+        </v-btn>
+      </div>
     </v-card>
 
-    <div class="timer" v-if="isTimerStarted">
-      <h2 v-if="displayedIntentLower">Буду {{ displayedIntentLower }} ещё:</h2>
-      <h2 v-else>Таймер:</h2>
+    <v-card v-if="isTimerStarted" class="timer-card">
+      <div class="timer-header">
+        <span class="timer-icon">⏱</span>
+        <h2 class="timer-title" v-if="displayedIntentLower">
+          Буду {{ displayedIntentLower }} ещё:
+        </h2>
+        <h2 class="timer-title" v-else>Таймер:</h2>
+      </div>
       <countdown-timer
         v-if="deadlineMs"
         :deadlineMs="deadlineMs"
         @timeElapsed="timeElapsedHandler"
       />
-      <v-btn @click="clearTimer" class="startButton">Стоп</v-btn>
-    </div>
+      <div class="timer-actions">
+        <v-btn @click="clearTimer" class="stopButton">
+          <span class="btn-icon">■</span>
+          Стоп
+        </v-btn>
+      </div>
+    </v-card>
   </v-dialog>
 </template>
 
@@ -171,31 +195,168 @@ function timeElapsedHandler() {
   });
 }
 </script>
+
 <style scoped>
 .modal {
-  background: white;
+  background: rgba(42, 42, 42, 0.4);
+  backdrop-filter: blur(8px);
 }
 
 .harmful-button {
   display: block;
-  margin: 15px auto;
+  margin: 24px auto 0;
+  background: var(--color-terracotta) !important;
+  color: white !important;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 16px;
+  padding: 0 36px !important;
+  height: 52px !important;
+  border-radius: var(--radius-soft) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.timer {
-  background: white;
-  padding: 16px;
+.harmful-button:hover:not(:disabled) {
+  background: var(--color-terracotta-light) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196, 112, 75, 0.35);
 }
 
-.startButton {
-  display: block;
-  margin: 0 auto;
+.btn-icon {
+  margin-right: 8px;
+  font-size: 12px;
 }
 
 .modal-card {
-  padding-bottom: 16px;
+  border-radius: var(--radius-medium) !important;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px 0;
+  gap: 12px;
+}
+
+.modal-icon {
+  font-size: 48px;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--color-forest);
+  text-align: center;
+  padding: 0;
+  margin: 0;
 }
 
 .modal-card-text {
-  font-size: 18px;
+  padding: 28px 32px !important;
+  text-align: center;
+}
+
+.choice-text {
+  font-size: 16px;
+  color: var(--color-stone);
+  margin: 0 0 8px 0;
+}
+
+.choice-text strong {
+  color: var(--color-charcoal);
+  font-weight: 600;
+}
+
+.activity {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  margin: 4px 0;
+}
+
+.harmful-activity {
+  color: var(--color-terracotta);
+}
+
+.instead {
+  font-size: 13px;
+  color: var(--color-stone);
+  margin: 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.useful-activity {
+  color: var(--color-forest);
+}
+
+.modal-actions {
+  padding: 0 32px 32px;
+}
+
+.startButton {
+  width: 100%;
+  background: var(--color-forest) !important;
+  color: var(--color-sand-light) !important;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 16px;
+  height: 52px !important;
+  border-radius: var(--radius-soft) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.startButton:hover {
+  background: var(--color-forest-light) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(45, 74, 62, 0.3);
+}
+
+.timer-card {
+  border-radius: var(--radius-medium) !important;
+  padding: 32px;
+  text-align: center;
+}
+
+.timer-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.timer-icon {
+  font-size: 48px;
+}
+
+.timer-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-forest);
+  margin: 0;
+}
+
+.timer-actions {
+  margin-top: 24px;
+}
+
+.stopButton {
+  background: var(--color-sand) !important;
+  color: var(--color-charcoal) !important;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 15px;
+  height: 44px !important;
+  border-radius: var(--radius-soft) !important;
+  transition: all 0.3s ease;
+}
+
+.stopButton:hover {
+  background: var(--color-sand-dark) !important;
 }
 </style>

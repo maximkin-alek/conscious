@@ -1,0 +1,48 @@
+:root {
+  --color-forest: #2d4a3e;
+  --color-forest-light: #3d5a4e;
+  --color-sand: #e8e0d5;
+  --color-sand-light: #f5f1eb;
+  --color-sand-dark: #d4c9b9;
+  --color-terracotta: #c4704b;
+  --color-terracotta-light: #d4865f;
+  --color-charcoal: #2a2a2a;
+  --color-stone: #8a8580;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --shadow-soft: 0 4px 20px rgba(45, 74, 62, 0.08);
+  --shadow-medium: 0 8px 32px rgba(45, 74, 62, 0.12);
+  --radius-soft: 16px;
+  --radius-medium: 24px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-sand-light);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--color-terracotta);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-sand);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-sand-dark);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-stone);
+}
