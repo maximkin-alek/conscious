@@ -227,8 +227,6 @@
   box-shadow: var(--shadow-medium);
 }
 
-}
-
 .image-decoration {
   position: absolute;
   top: 20px;
