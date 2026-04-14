@@ -38,8 +38,8 @@
     <v-card v-if="isTimerStarted" class="timer-card">
       <div class="timer-header">
         <span class="timer-icon">⏱</span>
-        <h2 class="timer-title" v-if="displayedIntentLower">
-          Буду {{ displayedIntentLower }} ещё:
+        <h2 class="timer-title" v-if="displayedIntentForTitle">
+          Буду {{ displayedIntentForTitle }} ещё:
         </h2>
         <h2 class="timer-title" v-else>Таймер:</h2>
       </div>
@@ -63,6 +63,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import CountdownTimer from "./CountdownTimer.vue";
 import { useTimerStore } from "../stores/useTimerStore";
+import { useIntent } from "../composables/useIntent";
 import alertSoundUrl from "../assets/alert.mp3";
 
 const props = defineProps({
@@ -75,19 +76,62 @@ const props = defineProps({
 const modal = ref(false);
 const beepAudio = ref(null);
 const sessionIntent = ref("");
+const { currentIntent, saveIntent } = useIntent();
 
 const timerStore = useTimerStore();
 const { isTimerStarted, deadlineMs } = storeToRefs(timerStore);
 const { startTimerRemote, stopTimerRemote, loadTimer } = timerStore;
 
-const harmfulLower = computed(() => (props.harmful || "").toLowerCase());
+const harmfulText = computed(() => (props.harmful || "").trim());
+const harmfulLower = computed(() => harmfulText.value.toLowerCase());
 const usefullLower = computed(() => (props.usefull || "").toLowerCase());
-const sessionIntentLower = computed(() =>
-  (sessionIntent.value || "").toLowerCase(),
+const sessionIntentText = computed(() => (sessionIntent.value || "").trim());
+const currentIntentText = computed(() => (currentIntent.value || "").trim());
+
+// Сохраняем ввод пользователя из формы (не приводим к lower-case, чтобы не портить текст)
+watch(
+  harmfulText,
+  (newValue) => {
+    if (newValue) {
+      saveIntent(newValue);
+    }
+  },
+  { immediate: true },
 );
-const displayedIntentLower = computed(
-  () => harmfulLower.value || sessionIntentLower.value,
-);
+
+const looksLikeInfinitive = (s) => /(?:ть|ти|чь)$/i.test(s);
+
+const toInstrumental = (s) => {
+  // Очень простая эвристика для “заниматься <кем/чем>”.
+  const w = String(s || "").trim();
+  if (!w) return "";
+
+  const lower = w.toLowerCase();
+  // "йога" -> "йогой", "тренировка" -> "тренировкой"
+  if (/[а]$/.test(lower)) return w.slice(0, -1) + "ой";
+  // "медитация" -> "медитацией"
+  if (/[я]$/.test(lower)) return w.slice(0, -1) + "ей";
+  // "вода" -> "водой" (тоже попадает в 'а')
+  if (/[ь]$/.test(lower)) return w.slice(0, -1) + "ью";
+  if (/[й]$/.test(lower)) return w.slice(0, -1) + "ем";
+  if (/[о]$/.test(lower)) return w.slice(0, -1) + "ом";
+  if (/[е]$/.test(lower)) return w.slice(0, -1) + "ем";
+  // fallback: unchanged
+  return w;
+};
+
+const formatIntentForTitle = (intent) => {
+  const t = String(intent || "").trim();
+  if (!t) return "";
+  if (looksLikeInfinitive(t)) return t.toLowerCase();
+  return `заниматься ${toInstrumental(t).toLowerCase()}`;
+};
+
+const displayedIntentForTitle = computed(() => {
+  // Приоритет: 1) Значение из сессии (могло прийти из AI-диалога), 2) локальное (форма/localStorage)
+  const raw = sessionIntentText.value || currentIntentText.value;
+  return formatIntentForTitle(raw);
+});
 
 onMounted(() => {
   loadTimer();
@@ -112,6 +156,11 @@ async function loadSession() {
   const intent =
     typeof data?.harmfulIntent === "string" ? data.harmfulIntent : "";
   sessionIntent.value = intent;
+  // Если intent пришёл из сессии (например, выбран в диалоге с AI) — синхронизируем локально,
+  // чтобы заголовок таймера и UI были консистентны.
+  if (intent && intent.trim() && intent.trim() !== currentIntent.value) {
+    saveIntent(intent.trim());
+  }
 }
 
 function ensureBeepReady() {
