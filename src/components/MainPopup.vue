@@ -213,6 +213,29 @@ function runTimer() {
       return;
     }
 
+    // Manual path should be equivalent to chat path:
+    // persist the user's current intent to backend session before starting timer.
+    const intent = harmfulText.value;
+    if (intent) {
+      void fetch("/api/session/intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ intent }),
+      })
+        .then((r) => r.json().catch(() => null))
+        .then((json) => {
+          const savedIntent =
+            typeof json?.data?.harmfulIntent === "string"
+              ? json.data.harmfulIntent
+              : "";
+          if (savedIntent) {
+            sessionIntent.value = savedIntent;
+            saveIntent(savedIntent);
+          }
+        })
+        .catch(() => {});
+    }
+
     void startTimerRemote(totalMinutes);
   } catch (error) {
     console.error("Ошибка при запуске таймера:", error);
@@ -368,6 +391,7 @@ function timeElapsedHandler() {
   border-radius: var(--radius-medium) !important;
   padding: 32px;
   text-align: center;
+  align-items: center;
 }
 
 .timer-header {

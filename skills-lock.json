@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "env-vars-setup": {
+      "source": "mish-design/skills",
+      "sourceType": "github",
+      "computedHash": "ddffa70b240d44f04fec5c75f3d87e85e2369c8bf2d892eca50f7f63d84de673"
+    }
+  }
+}

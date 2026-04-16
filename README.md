@@ -51,3 +51,9 @@ yarn lint
 Перед `git push` запускается хук, который генерирует `AI_REVIEW.md`.
 Чтобы включить **реальное LLM-ревью**, создайте `.env.local` по примеру `.env.example`
 и заполните `OPENAI_API_KEY`.
+
+Полезные команды:
+
+- `yarn env:init` — создать `.env.local` из `.env.example`, если его нет
+- `yarn env:check` — проверить, что `.env.local` существует
+- `yarn env:validate` — проверить корректность env (типы/URL/лимиты), без вывода секретов

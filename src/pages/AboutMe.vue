@@ -65,7 +65,7 @@
         <div class="about-image-wrapper">
           <img
             class="about-image"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Single_mountain_at_sunrise.jpg/800px-Single_mountain_at_sunrise.jpg"
+            src="https://cdn1.ozone.ru/s3/multimedia-1/6447924457.jpg"
             alt="Время и фокус"
           />
           <div class="image-decoration"></div>

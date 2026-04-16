@@ -17,6 +17,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const { getAiReviewEnv } = require("./env");
 
 const PROJECT_ROOT = process.cwd();
 const RULES_FILE = path.join(PROJECT_ROOT, ".cursorrules");
@@ -57,15 +58,14 @@ function loadDotEnvFile(relPath) {
 loadDotEnvFile(".env.local");
 loadDotEnvFile(".env");
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
-const OPENAI_BASE_URL = (
-  process.env.OPENAI_BASE_URL || "https://api.openai.com/v1"
-).replace(/\/$/, "");
-
-const MAX_FILES = Number(process.env.AI_REVIEW_MAX_FILES || 12);
-const MAX_FILE_CHARS = Number(process.env.AI_REVIEW_MAX_FILE_CHARS || 40000);
-const MAX_DIFF_CHARS = Number(process.env.AI_REVIEW_MAX_DIFF_CHARS || 120000);
+const {
+  OPENAI_API_KEY,
+  OPENAI_MODEL,
+  OPENAI_BASE_URL,
+  AI_REVIEW_MAX_FILES: MAX_FILES,
+  AI_REVIEW_MAX_FILE_CHARS: MAX_FILE_CHARS,
+  AI_REVIEW_MAX_DIFF_CHARS: MAX_DIFF_CHARS,
+} = getAiReviewEnv();
 
 function safeExec(cmd) {
   return execSync(cmd, { encoding: "utf-8" }).trim();
